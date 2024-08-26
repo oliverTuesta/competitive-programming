@@ -65,14 +65,45 @@ struct graph {
       for (const auto &e : adj[u]) {
         if (e.capacity > 0) {  // Ignore reverse edges with 0 original capacity
           cout << "Edge from " << e.src << " to " << e.dst
-               << " | Capacity: " << e.capacity
-               << " | Flow: " << e.flow
-               << " | Residual Capacity: " << (e.capacity - e.flow) << endl;
+            << " | Capacity: " << e.capacity
+            << " | Flow: " << e.flow
+            << " | Residual Capacity: " << (e.capacity - e.flow) << endl;
         }
       }
     }
     cout << "------------------------" << endl;
   }
+
+  void print_mincut_edges() {
+    // Step 1: Find reachable nodes from the source in the residual graph
+    vector<bool> visited(n, false);
+    queue<int> q;
+    q.push(0);  // Assuming 0 is the source node
+    visited[0] = true;
+
+    while (!q.empty()) {
+      int u = q.front();
+      q.pop();
+      for (const auto &e : adj[u]) {
+        if (!visited[e.dst] && e.capacity > e.flow) {  // Residual capacity > 0
+          visited[e.dst] = true;
+          q.push(e.dst);
+        }
+      }
+    }
+
+    // Step 2: Print edges that cross the cut
+    for (int u = 0; u < n; ++u) {
+      if (!visited[u]) continue;
+      for (const auto &e : adj[u]) {
+        if (!visited[e.dst] && e.capacity > 0) {
+          cout << u + 1 << " " << e.dst + 1 << '\n';  // Output edge in 1-based index
+        }
+      }
+
+    }
+  }
+
 
 };
 
