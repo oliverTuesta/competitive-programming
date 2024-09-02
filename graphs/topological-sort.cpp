@@ -14,13 +14,12 @@ vector<int> adj[MAXN];
 vector<int> topo;
 
 int n,m;
-vector<int> visited;
 
-void dfs(int u) {
+void dfs(int u, vector<int> &visited) {
   visited[u] = 1;
   for (int &v : adj[u]) {
     if (!visited[v]) 
-      dfs(v);
+      dfs(v, visited);
     else if(visited[v] == 1){
       cout << "IMPOSSIBLE\n";
       exit(0);
@@ -32,11 +31,11 @@ void dfs(int u) {
 
 void topological_sort() {
   topo.clear();
-  visited.assign(n+1,0);
+  vector<int> visited(n+1,0);
 
   for (int i = 1; i <= n; i++) 
     if (!visited[i])
-      dfs(i);
+      dfs(i, visited);
 
   reverse(topo.begin(), topo.end());
 }
