@@ -16,6 +16,7 @@ vector<pair<int, int>> adj[MAXN];
 void dijkstra(int s, vector<int> & d, vector<int> & p) {
   d.assign(n+1, INF);
   p.assign(n+1, -1);
+  vector<bool> visited(n+1,0);
 
   d[s] = 0;
   using pii = pair<int, int>;
@@ -23,10 +24,9 @@ void dijkstra(int s, vector<int> & d, vector<int> & p) {
   q.push({0, s});
   while (!q.empty()) {
     int v = q.top().second;
-    int d_v = q.top().first;
     q.pop();
-    if (d_v != d[v])
-      continue;
+    if(visited[v]) continue;
+    visited[v] = 1;
 
     for (auto edge : adj[v]) {
       int to = edge.first;
