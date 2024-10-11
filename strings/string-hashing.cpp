@@ -18,7 +18,6 @@ void compute_powers(int n) {
     }
 }
 
-
 vector<ll> compute_hash(string const& s) {
     int n = s.size();
     vector<ll> hash_values(n + 5);
