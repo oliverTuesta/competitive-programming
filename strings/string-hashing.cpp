@@ -28,7 +28,7 @@ vector<ll> compute_hash(string const& s) {
     return hash_values;
 }
 
-ll get_hash(vector<ll> hash_values, int a, int b) {
+ll get_hash(vector<ll> &hash_values, int a, int b) {
     return (hash_values[b] - (hash_values[a - 1] * pot[b - a + 1]) % M + M) % M;
 }
 
