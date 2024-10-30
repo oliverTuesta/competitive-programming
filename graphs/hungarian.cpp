@@ -85,14 +85,15 @@ struct KuhnMunkras { // n for left, m for right
 void solve() {
   int n, m;
   cin >> n >> m;
+
   KuhnMunkras<double> km;
   km.init(n, m);
 
-  vector<vector<double>> c(n + 1, vector<double>(m + 1));
   for (int i = 1; i <= n; ++i) {
     for (int j = 1; j <= m; ++j) {
-      cin >> c[i][j];
-      km.add(i,j, -c[i][j]);
+      double c; 
+      cin >> c;
+      km.add(i,j, -c);
     }
   }
 
