@@ -11,7 +11,6 @@ using namespace std;
 const int INF = 1 << 30;
 const int MAXN = 25;
 const int MAXM = 25;
-const double EPS = 1e9-9;
 
 // hungarian weighted matching algo
 // finds the MAX cost of MAX matching, to find mincost, add edges as negatives
