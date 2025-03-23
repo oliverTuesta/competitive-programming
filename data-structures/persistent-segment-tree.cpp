@@ -73,9 +73,9 @@ void update(Node* root, int pos, ll value) {
   }
   int m = (root->start + root->end) / 2;
   if(pos <= m) {
-    persistent_update(root->left, pos, value);
+    update(root->left, pos, value);
   } else {
-    persistent_update(root->right, pos, value);
+    update(root->right, pos, value);
   }
   root->value = aggregate_function(root->left->value, root->right->value);
 }
