@@ -48,7 +48,7 @@ ll query(Node* root, int start, int end) {
   return ans;
 }
 
-Node* update(Node* root, int pos, ll value) {
+Node* persistent_update(Node* root, int pos, ll value) {
   Node* node = new Node(root->start, root->end);
   if(root->start == root->end) {
     node->value = value;
@@ -56,14 +56,28 @@ Node* update(Node* root, int pos, ll value) {
   }
   int m = (root->start + root->end) / 2;
   if(pos <= m) {
-    node->left = update(root->left, pos, value);
+    node->left = persistent_update(root->left, pos, value);
     node->right = root->right;
   } else {
-    node->right = update(root->right, pos, value);
+    node->right = persistent_update(root->right, pos, value);
     node->left = root->left;
   }
   node->value = aggregate_function(node->left->value, node->right->value);
   return node;
+}
+
+void update(Node* root, int pos, ll value) {
+  if(root->start == root->end) {
+    root->value = value;
+    return;
+  }
+  int m = (root->start + root->end) / 2;
+  if(pos <= m) {
+    persistent_update(root->left, pos, value);
+  } else {
+    persistent_update(root->right, pos, value);
+  }
+  root->value = aggregate_function(root->left->value, root->right->value);
 }
 
 void solve() {
@@ -71,9 +85,9 @@ void solve() {
   int n = arr.size();
   Node* root = build(arr,0,n-1);
   cout << query(root,0,n-1) << endl; // 6
-  Node* mod1 = update(root,0,2);
+  Node* mod1 = persistent_update(root,0,2);
   cout << query(mod1,0,n-1) << endl; // 7
-  Node* mod2 = update(mod1,0,10);
+  Node* mod2 = persistent_update(mod1,0,10);
   cout << query(mod2,0,n-1) << endl; // 15
 }
 
