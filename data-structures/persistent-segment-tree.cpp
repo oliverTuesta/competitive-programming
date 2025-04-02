@@ -59,7 +59,8 @@ ll query(Node* root, int start, int end) {
   if(start > end) return 0;
   if(root->start == start && root->end == end)
     return root->value;
-
+  
+  pushDown(root);
   int m = (root->start+root->end)/2;
   ll ans = aggregate_function(query(root->left,start,min(m,end)), query(root->right,max(m+1,start),end));
   return ans;
