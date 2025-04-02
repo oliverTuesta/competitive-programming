@@ -15,9 +15,10 @@ struct Node {
   int start, end;
   Node* left;
   Node* right;
+  ll lazy;
 
   Node(int start, int end) : 
-    start(start), end(end), value(0), left(nullptr), right(nullptr) {}
+    start(start), end(end), value(0), lazy(0), left(nullptr), right(nullptr) {}
 };
 
 ll aggregate_function(ll left, ll right){
@@ -36,6 +37,22 @@ Node* build(vector<ll> &arr, int l, int r){
   node->right = build(arr, m+1, r);
   node->value = aggregate_function(node->left->value, node->right->value);
   return node;
+}
+
+void pushDown(Node* node) {
+  if(node->lazy != 0) {
+    if(node->left) {
+      int leftRange = node->left->end - node->left->start + 1;
+      node->left->value += node->lazy * leftRange;
+      node->left->lazy += node->lazy;
+    }
+    if(node->right) {
+      int rightRange = node->right->end - node->right->start + 1;
+      node->right->value += node->lazy * rightRange;
+      node->right->lazy += node->lazy;
+    }
+    node->lazy = 0;
+  }
 }
 
 ll query(Node* root, int start, int end) {
@@ -80,15 +97,36 @@ void update(Node* root, int pos, ll value) {
   root->value = aggregate_function(root->left->value, root->right->value);
 }
 
+void update_range(Node* node, int l, int r, ll delta) {
+  if(l > r) return;
+  if(l <= node->start && node->end <= r) {
+    int rangeLength = node->end - node->start + 1;
+    node->value += delta * rangeLength;
+    node->lazy += delta;
+    return;
+  }
+  pushDown(node);
+  int m = (node->start + node->end) / 2;
+  if(l <= m)
+    update_range(node->left, l, min(r, m), delta);
+  if(r > m)
+    update_range(node->right, max(l, m+1), r, delta);
+  node->value = aggregate_function(node->left->value, node->right->value);
+}
+
 void solve() {
   vector<ll> arr = {1,1,1,1,1,1};
   int n = arr.size();
   Node* root = build(arr,0,n-1);
-  cout << query(root,0,n-1) << endl; // 6
+  cout << query(root,0,n-1) << endl;
   Node* mod1 = persistent_update(root,0,2);
-  cout << query(mod1,0,n-1) << endl; // 7
+  cout << query(mod1,0,n-1) << endl;
   Node* mod2 = persistent_update(mod1,0,10);
-  cout << query(mod2,0,n-1) << endl; // 15
+  cout << query(mod2,0,n-1) << endl;
+
+  cout << endl;
+  update_range(root, 0, 2, 1);
+  cout << query(root,0,n-1) << endl;
 }
 
 int main() {
