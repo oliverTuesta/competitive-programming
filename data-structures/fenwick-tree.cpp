@@ -10,46 +10,58 @@ using namespace std;
 const int INF = 1 << 30;
 const int MAXN = 1e5+5;
 
-int n, m;
-int a[MAXN];
-long long f[MAXN];
-char q;
-int l, r;
+struct FenwickTree {
+  vector<ll> bit; 
+  ll n;
 
-void update(int pos, int delta) {
-  for (; pos <= n; pos = (pos | (pos + 1)))
-    f[pos] += delta;
-}
-
-long long sum(int pos) {
-  long long res = 0;
-  for (; pos > 0; pos = (pos & (pos + 1)) - 1)
-    res += f[pos];
-  return res;
-}
-
-long long sum(int l, int r) {
-  return sum(r) - sum(l - 1);
-}
-
-void solve() {
-
-  cin >> n;
-  for (int i = 1; i <= n; i++) {
-    cin >> a[i];
-    update(i, a[i]);
+  FenwickTree(ll n) {
+    this->n = n;
+    bit.assign(n, 0);
   }
 
+  FenwickTree(vector<ll> const &a) : FenwickTree(a.size()) {
+    for (size_t i = 0; i < a.size(); i++)
+      add(i, a[i]);
+  }
+
+  ll sum(ll r) {
+    ll ret = 0;
+    for (; r >= 0; r = (r & (r + 1)) - 1)
+      ret += bit[r];
+    return ret;
+  }
+
+  ll sum(ll l, ll r) {
+    return sum(r) - sum(l - 1);
+  }
+
+  void add(ll idx, ll delta) {
+    for (; idx < n; idx = idx | (idx + 1))
+      bit[idx] += delta;
+  }
+};
+
+
+void solve() {
+  int n; cin >> n;
+  vector<ll> arr(n);
+  for (int i = 0; i < n; i++) {
+    cin >> arr[i];
+  }
+  FenwickTree ft(arr);
+
+  int m;
   cin >> m;
   for (int i = 1; i <= m; i++) {
+    int q,l,r;
     cin >> q >> l >> r;
     if (q == 's') {
-      cout << sum(l, r) << " ";
+      cout << ft.sum(l, r) << " ";
     }
     else {
-      int delta = r - a[l];
-      a[l] = r;
-      update(l, delta);
+      int delta = r - arr[l];
+      arr[l] = r;
+      ft.add(l, delta);
     } 
   }
 }
