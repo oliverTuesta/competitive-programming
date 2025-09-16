@@ -5,7 +5,7 @@ using namespace std;
 #define fst first
 #define snd second
 #define all(c) ((c).begin()), ((c).end())
-#define ll int
+#define ll long long
 
 const int INF = 1 << 30;
 const int MAXN = 1e5+5;
