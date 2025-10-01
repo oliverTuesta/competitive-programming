@@ -43,7 +43,7 @@ node* merge(node* a, node* b) {
     update(a);
     return a;
   } else {
-    b->left = merge(b->left, a);
+    b->left = merge(a, b->left);
     update(b);
     return b;
   }
