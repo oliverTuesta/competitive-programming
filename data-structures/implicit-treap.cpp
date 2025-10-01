@@ -26,7 +26,7 @@ int cnt(node* t) {
   return t ? t->cnt : 0;
 }
 
-void upd_cnt(node* t) {
+void update(node* t) {
   if (t) t->cnt = 1 + cnt(t->left) + cnt(t->right);
 }
 
@@ -35,11 +35,11 @@ node* merge(node* a, node* b) {
   if (!b) return a;
   if (a->priority > b->priority) {
     a->right = merge(a->right, b);
-    upd_cnt(a);
+    update(a);
     return a;
   } else {
     b->left = merge(a, b->left);
-    upd_cnt(b);
+    update(b);
     return b;
   }
 }
@@ -50,12 +50,12 @@ pair<node*, node*> split(node* T, int k, int add = 0) {
   if (k <= cur_key) {
     auto p = split(T->left, k, add);
     T->left = p.second;
-    upd_cnt(T);
+    update(T);
     return {p.first, T};
   } else {
     auto p = split(T->right, k, add + 1 + cnt(T->left));
     T->right = p.first;
-    upd_cnt(T);
+    update(T);
     return {T, p.second};
   }
 }
