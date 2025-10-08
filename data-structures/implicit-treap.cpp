@@ -22,6 +22,16 @@ struct node {
   }
 };
 
+// push for reverse
+/* void push(node* t) {
+   if(!t || !t->rev) return;
+   t->rev = 0;
+   swap(t->left, t->right);
+   if(t->left) t->left->rev ^= 1;
+   if(t->right) t->right->rev ^= 1;
+ }
+*/
+
 int cnt(node* t) {
   return t ? t->cnt : 0;
 }
@@ -34,18 +44,22 @@ node* merge(node* a, node* b) {
   if (!a) return b;
   if (!b) return a;
   if (a->priority > b->priority) {
+    // push(a)
     a->right = merge(a->right, b);
     update(a);
     return a;
   } else {
+    // push(b)
     b->left = merge(a, b->left);
     update(b);
     return b;
   }
 }
 
+// 0-index
 pair<node*, node*> split(node* T, int k, int add = 0) {
   if (!T) return {nullptr, nullptr};
+  // push(T)
   int cur_key = add + cnt(T->left);
   if (k <= cur_key) {
     auto p = split(T->left, k, add);
@@ -79,6 +93,13 @@ void inorder(node* T) {
   inorder(T->left);
   cout << T->value << " ";
   inorder(T->right);
+}
+
+node* kth(node* t, int k) {
+  int left_size = cnt(t->left);
+  if (k < left_size) return kth(t->left, k);
+  else if (k == left_size) return t;
+  else return kth(t->right, k - left_size - 1);
 }
 
 void solve() {
