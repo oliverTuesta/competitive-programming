@@ -22,17 +22,20 @@ struct node {
   int priority;
   node* left;
   node* right;
-  node() {
-    left = right = nullptr; 
-  }
+  int cnt;
   node(int v) : key(v) {
     priority = random(0,1e9);
     left = right = nullptr; 
+    cnt = 1;
   }
 };
 
-void update(node *a) {
+int cnt(node* t) {
+  return t ? t->cnt : 0;
+}
 
+void update(node *t) {
+  if (t) t->cnt = 1 + cnt(t->left) + cnt(t->right);
 }
 
 node* merge(node* a, node* b) {
@@ -84,6 +87,13 @@ bool find(node* T, int x) {
   if (T->key == x) return true;
   if (x < T->key) return find(T->left, x);
   return find(T->right, x);
+}
+
+node* kth(node* t, int k) {
+  int left_size = cnt(t->left);
+  if (k < left_size) return kth(t->left, k);
+  else if (k == left_size) return t;
+  else return kth(t->right, k - left_size - 1);
 }
 
 void inorder(node* T) {
