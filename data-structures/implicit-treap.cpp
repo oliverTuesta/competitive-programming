@@ -15,6 +15,8 @@ struct node {
   node* left;
   node* right;
   int cnt;
+
+  bool rev;
   node(int v) : value(v) {
     priority = random(0, 1e9);
     left = right = nullptr;
@@ -22,34 +24,34 @@ struct node {
   }
 };
 
-// push for reverse
-/* void push(node* t) {
+int cnt(node* t) {
+  return t ? t->cnt : 0;
+}
+
+// push for reverse or lazy propagation
+void push(node* t) {
    if(!t || !t->rev) return;
    t->rev = 0;
    swap(t->left, t->right);
    if(t->left) t->left->rev ^= 1;
    if(t->right) t->right->rev ^= 1;
  }
-*/
-
-int cnt(node* t) {
-  return t ? t->cnt : 0;
-}
 
 void update(node* t) {
-  if (t) t->cnt = 1 + cnt(t->left) + cnt(t->right);
+  if (!t) return;
+  t->cnt = 1 + cnt(t->left) + cnt(t->right);
 }
 
 node* merge(node* a, node* b) {
   if (!a) return b;
   if (!b) return a;
   if (a->priority > b->priority) {
-    // push(a)
+    push(a);
     a->right = merge(a->right, b);
     update(a);
     return a;
   } else {
-    // push(b)
+    push(b);
     b->left = merge(a, b->left);
     update(b);
     return b;
@@ -59,7 +61,7 @@ node* merge(node* a, node* b) {
 // 0-index
 pair<node*, node*> split(node* T, int k, int add = 0) {
   if (!T) return {nullptr, nullptr};
-  // push(T)
+  push(T);
   int cur_key = add + cnt(T->left);
   if (k <= cur_key) {
     auto p = split(T->left, k, add);
@@ -96,10 +98,24 @@ void inorder(node* T) {
 }
 
 node* kth(node* t, int k) {
+  push(t);
   int left_size = cnt(t->left);
   if (k < left_size) return kth(t->left, k);
   else if (k == left_size) return t;
   else return kth(t->right, k - left_size - 1);
+}
+
+node* update_range(node* t, int l, int r, int delta) {
+  auto p = split(t, r + 1);
+  auto p2 = split(p.first, l);
+
+  if (p2.second) {
+    p2.second->lazy += delta;  // mark range for update
+    push(p2.second);           // optionally apply now (or can defer)
+    update(p2.second);         // recompute cnt/sum
+  }
+
+  return merge(merge(p2.first, p2.second), p.second);
 }
 
 void solve() {
